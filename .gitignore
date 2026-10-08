@@ -1,0 +1,15 @@
+# Артефакты сборки
+/target/
+/migration/target/
+
+# Секреты и конфиденциальные данные
+.env
+.env.*
+!.env.example 
+
+# Бэкапы rustfmt
+**/*.rs.bk
+
+# IDE
+.idea/
+.vscode/
