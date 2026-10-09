@@ -2,38 +2,32 @@
 ARG RUST_VERSION=1.98.1
 ARG APP_NAME=axum_postgres_app
 
-# ---------- Build stage ----------
-FROM rust:${RUST_VERSION}-slim AS builder
-ARG APP_NAME
+# ---------- Стадия 1: chef ----------
+FROM lukemathwalker/cargo-chef:latest-rust-${RUST_VERSION} AS chef
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    pkg-config libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+# ---------- Стадия 2: planner ----------
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-# Кеш зависимостей через dummy build
-COPY Cargo.toml Cargo.lock ./
-COPY migration/Cargo.toml ./migration/
-RUN mkdir -p src && echo "fn main() {}" > src/main.rs && \
-    --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/app/target \
-    cargo build --release --locked && \
-    rm -rf src
-
-# Реальная сборка (копируем всё, включая migration)
-COPY src ./src
-COPY migration ./migration
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/app/target \
-    cargo build --release --locked --bin ${APP_NAME} && \
+# ---------- Стадия 3: builder ----------
+FROM chef AS builder
+ARG APP_NAME
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+COPY . .
+RUN cargo build --release --locked \
+        -p ${APP_NAME} --bin ${APP_NAME} \
+        -p migration --bin migrator && \
     cp target/release/${APP_NAME} /app/server && \
-    strip /app/server
+    cp target/release/migrator /app/migrator && \
+    strip /app/server /app/migrator
 
-# ---------- Runtime stage ----------
+# ---------- Стадия 4: runtime ----------
 FROM debian:stable-slim AS runtime
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
+        ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd -g 1001 app && useradd -u 1001 -g app -m app
 
@@ -44,3 +38,17 @@ RUN chown app:app /app/server
 USER app
 EXPOSE 3000
 ENTRYPOINT ["/app/server"]
+
+# ---------- Стадия 5: migrator ----------
+FROM debian:stable-slim AS migrator
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -g 1001 app && useradd -u 1001 -g app -m app
+
+WORKDIR /app
+COPY --from=builder /app/migrator /app/migrator
+RUN chown app:app /app/migrator
+
+USER app
+ENTRYPOINT ["/app/migrator"]
