@@ -51,5 +51,9 @@ chrono = { version = "0.4", features = ["serde"] }
 migration = { path = "migration" }
 http-body-util = "0.1.5"
 
+# Мониторинг
+axum-prometheus = "0.10.1"
+metrics-exporter-prometheus = "0.18"
+
 [dev-dependencies]
 once_cell = "1"
