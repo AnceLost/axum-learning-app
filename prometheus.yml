@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Метрики Rust-приложения (Axum + Prometheus)
+  - job_name: 'rustapp'
+    static_configs:
+      - targets: ['rustapp:3000']
+    metrics_path: '/metrics'
+
+  # Метрики PostgreSQL через exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']

@@ -13,3 +13,6 @@
 # IDE
 .idea/
 .vscode/
+
+# Конкретно этот нужен для развертки где нибудь ещё, но не на ВМ
+docker-compose.grafana.yml

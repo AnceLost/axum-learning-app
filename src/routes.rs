@@ -2,6 +2,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use metrics_exporter_prometheus::PrometheusHandle;
 
 use crate::{
     handlers::{competitions, horses, jockeys, owners, races, results},
@@ -34,4 +35,12 @@ pub fn create_router(state: AppState) -> Router {
             get(races::race_results_list).post(results::add_results),
         )
         .with_state(state)
+}
+
+pub fn create_metrics_router(metric_handle: PrometheusHandle) -> Router {
+    Router::new()
+        .route("/metrics", get(move || {
+            let handle = metric_handle.clone();
+            async move {handle.render()}
+        }))
 }

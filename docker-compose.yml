@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16
+    container_name: postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-app}
@@ -8,6 +9,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-app}
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - monitoring-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app}"]
       interval: 5s
@@ -32,6 +35,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: runtime
+    container_name: rustapp
     restart: unless-stopped
     depends_on:
       migrate:
@@ -44,8 +48,14 @@ services:
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@db:5432/${POSTGRES_DB:-app}
       RUST_LOG: info,tower_http=info
+    networks:
+      - monitoring-net
     ports:
       - "3000:3000"
 
 volumes:
   pg_data:
+
+networks:
+  monitoring-net:
+    external: true
