@@ -29,6 +29,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@db:5432/${POSTGRES_DB:-app}
+    networks:
+      - monitoring-net
 
   app:
     build:
