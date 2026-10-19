@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::models::enums::{HorseGender, RaceStatus};
+use crate::models::enums::{HorseGender};
 
 #[derive(Deserialize)]
 pub struct CreateOwner {

@@ -1,5 +1,4 @@
 use axum_postgres_app::{routes, state::AppState};
-use axum::Router;
 //use migration::{Migrator};
 //use sea_orm_migration::MigratorTrait;
 use axum_prometheus::PrometheusMetricLayer;

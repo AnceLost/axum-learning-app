@@ -3,7 +3,7 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set, TransactionTrait, ConnectionTrait};
+use sea_orm::{ActiveModelTrait, EntityTrait, Set, TransactionTrait, ConnectionTrait};
 use uuid::Uuid;
 
 use crate::{
