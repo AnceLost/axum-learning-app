@@ -6,7 +6,7 @@
 !target/release
 
 # 3. Разрешаем конкретные файлы
-!target/release/axum-learning-app
+!target/release/axum_postgres_app
 !target/release/migrator
 
 # 4. Разрешаем сам Dockerfile и файл игнорирования
