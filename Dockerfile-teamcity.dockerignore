@@ -1,0 +1,10 @@
+# Игнорируем абсолютно всё
+**
+
+# Явно разрешаем Dockerfile и сам .dockerignore
+!Dockerfile-teamcity
+!Dockerfile-teamcity.dockerignore
+
+# Разрешаем ТОЛЬКО готовые релизные бинарники
+!target/release/axum-learning-app
+!target/release/migrator
