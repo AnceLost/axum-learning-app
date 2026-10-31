@@ -1,17 +1,10 @@
-use axum::{extract::State, Json, http::StatusCode};
+use axum::{Json, extract::State, http::StatusCode};
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 use uuid::Uuid;
 
-use crate::{
-    dto::CreateOwner,
-    error::AppResult,
-    models::owners,
-    state::AppState,
-};
+use crate::{dto::CreateOwner, error::AppResult, models::owners, state::AppState};
 
-pub async fn list_owners(
-    State(state): State<AppState>,
-) -> AppResult<Json<Vec<owners::Model>>> {
+pub async fn list_owners(State(state): State<AppState>) -> AppResult<Json<Vec<owners::Model>>> {
     let owners = owners::Entity::find().all(&state.db).await?;
     Ok(Json(owners))
 }
@@ -25,7 +18,6 @@ pub async fn create_owner(
         name: Set(payload.name),
         address: Set(payload.address),
         phone: Set(payload.phone),
-        ..Default::default()
     };
     let owner = owner.insert(&state.db).await?;
     Ok((StatusCode::CREATED, Json(owner)))

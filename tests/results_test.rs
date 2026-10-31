@@ -3,45 +3,63 @@ mod common;
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
 use http_body_util::BodyExt;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use tower::ServiceExt;
 
 async fn setup_full(app: &axum::Router) -> (String, String, String, String) {
     // owner
-    let req = Request::builder().method("POST").uri("/owners")
+    let req = Request::builder()
+        .method("POST")
+        .uri("/owners")
         .header("Content-Type", "application/json")
-        .body(Body::from(json!({"name": "O"}).to_string())).unwrap();
+        .body(Body::from(json!({"name": "O"}).to_string()))
+        .unwrap();
     let resp = app.clone().oneshot(req).await.unwrap();
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let v: Value = serde_json::from_slice(&body).unwrap();
     let owner_id = v["id"].as_str().unwrap().to_string();
 
     // jockey
-    let req = Request::builder().method("POST").uri("/jockeys")
+    let req = Request::builder()
+        .method("POST")
+        .uri("/jockeys")
         .header("Content-Type", "application/json")
-        .body(Body::from(json!({"name": "J"}).to_string())).unwrap();
+        .body(Body::from(json!({"name": "J"}).to_string()))
+        .unwrap();
     let resp = app.clone().oneshot(req).await.unwrap();
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let v: Value = serde_json::from_slice(&body).unwrap();
     let jockey_id = v["id"].as_str().unwrap().to_string();
 
     // horse
-    let req = Request::builder().method("POST").uri("/horses")
+    let req = Request::builder()
+        .method("POST")
+        .uri("/horses")
         .header("Content-Type", "application/json")
-        .body(Body::from(json!({
-            "name": "H", "gender": "MARE", "age": 4, "owner_id": owner_id,
-        }).to_string())).unwrap();
+        .body(Body::from(
+            json!({
+                "name": "H", "gender": "MARE", "age": 4, "owner_id": owner_id,
+            })
+            .to_string(),
+        ))
+        .unwrap();
     let resp = app.clone().oneshot(req).await.unwrap();
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let v: Value = serde_json::from_slice(&body).unwrap();
     let horse_id = v["id"].as_str().unwrap().to_string();
 
     // competition + race
-    let req = Request::builder().method("POST").uri("/competitions")
+    let req = Request::builder()
+        .method("POST")
+        .uri("/competitions")
         .header("Content-Type", "application/json")
-        .body(Body::from(json!({
-            "date": "2026-04-15", "time": "14:30:00", "venue": "X",
-        }).to_string())).unwrap();
+        .body(Body::from(
+            json!({
+                "date": "2026-04-15", "time": "14:30:00", "venue": "X",
+            })
+            .to_string(),
+        ))
+        .unwrap();
     let resp = app.clone().oneshot(req).await.unwrap();
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let v: Value = serde_json::from_slice(&body).unwrap();
@@ -49,9 +67,10 @@ async fn setup_full(app: &axum::Router) -> (String, String, String, String) {
 
     let req = Request::builder()
         .method("POST")
-        .uri(&format!("/competitions/{}/races", competition_id))
+        .uri(format!("/competitions/{}/races", competition_id))
         .header("Content-Type", "application/json")
-        .body(Body::from(json!({"name": "Заезд 1"}).to_string())).unwrap();
+        .body(Body::from(json!({"name": "Заезд 1"}).to_string()))
+        .unwrap();
     let resp = app.clone().oneshot(req).await.unwrap();
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let v: Value = serde_json::from_slice(&body).unwrap();
@@ -70,7 +89,7 @@ async fn finish_time_converted_correctly() {
 
     let req = Request::builder()
         .method("POST")
-        .uri(&format!("/races/{}/results", race_id))
+        .uri(format!("/races/{}/results", race_id))
         .header("Content-Type", "application/json")
         .body(Body::from(
             json!([{
@@ -89,8 +108,9 @@ async fn finish_time_converted_correctly() {
     // читаем обратно
     let req = Request::builder()
         .method("GET")
-        .uri(&format!("/races/{}/results", race_id))
-        .body(Body::empty()).unwrap();
+        .uri(format!("/races/{}/results", race_id))
+        .body(Body::empty())
+        .unwrap();
     let resp = app.oneshot(req).await.unwrap();
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let v: Value = serde_json::from_slice(&body).unwrap();
@@ -110,7 +130,7 @@ async fn finish_time_nullable() {
 
     let req = Request::builder()
         .method("POST")
-        .uri(&format!("/races/{}/results", race_id))
+        .uri(format!("/races/{}/results", race_id))
         .header("Content-Type", "application/json")
         .body(Body::from(
             json!([{
@@ -138,13 +158,14 @@ async fn duplicate_place_rejected() {
     // первая вставка
     let req = Request::builder()
         .method("POST")
-        .uri(&format!("/races/{}/results", race_id))
+        .uri(format!("/races/{}/results", race_id))
         .header("Content-Type", "application/json")
         .body(Body::from(
             json!([{
                 "horse_id": horse_id, "jockey_id": jockey_id,
                 "place": 1, "finish_time": 100.0
-            }]).to_string(),
+            }])
+            .to_string(),
         ))
         .unwrap();
     let resp = app.clone().oneshot(req).await.unwrap();
@@ -154,13 +175,14 @@ async fn duplicate_place_rejected() {
     // (нужен второй horse/jockey, но для теста хватит того, что тот же race_id + place)
     let req = Request::builder()
         .method("POST")
-        .uri(&format!("/races/{}/results", race_id))
+        .uri(format!("/races/{}/results", race_id))
         .header("Content-Type", "application/json")
         .body(Body::from(
             json!([{
                 "horse_id": horse_id, "jockey_id": jockey_id,
                 "place": 1, "finish_time": 200.0
-            }]).to_string(),
+            }])
+            .to_string(),
         ))
         .unwrap();
     let resp = app.oneshot(req).await.unwrap();

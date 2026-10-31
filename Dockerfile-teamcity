@@ -1,0 +1,29 @@
+# ---------- Стадия 1: Server ----------
+FROM debian:stable-slim AS runtime
+
+# Создаём пользователя
+RUN useradd -m -s /bin/bash app
+
+WORKDIR /app
+# Копируем ТОЛЬКО готовый бинарник из контекста
+COPY target/release/axum-learning-app /app/server
+
+RUN chown app:app /app/server
+USER app
+
+EXPOSE 3000
+ENTRYPOINT ["/app/server"]
+
+# ---------- Стадия 2: Migrator ----------
+FROM debian:stable-slim AS migrator
+
+RUN useradd -m -s /bin/bash app
+
+WORKDIR /app
+# Копируем ТОЛЬКО бинарник мигратора
+COPY target/release/migrator /app/migrator
+
+RUN chown app:app /app/migrator
+USER app
+
+ENTRYPOINT ["/app/migrator"]
