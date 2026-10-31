@@ -14,7 +14,8 @@ async fn horse_gender_lowercase_rejected() {
 
     // сначала нужен owner
     let req = Request::builder()
-        .method("POST").uri("/owners")
+        .method("POST")
+        .uri("/owners")
         .header("Content-Type", "application/json")
         .body(Body::from(json!({"name": "X"}).to_string()))
         .unwrap();
@@ -25,7 +26,8 @@ async fn horse_gender_lowercase_rejected() {
 
     // lowercase должен быть отвергнут
     let req = Request::builder()
-        .method("POST").uri("/horses")
+        .method("POST")
+        .uri("/horses")
         .header("Content-Type", "application/json")
         .body(Body::from(
             json!({
@@ -55,7 +57,8 @@ async fn horse_age_zero_rejected() {
     let app = common::app(db);
 
     let req = Request::builder()
-        .method("POST").uri("/owners")
+        .method("POST")
+        .uri("/owners")
         .header("Content-Type", "application/json")
         .body(Body::from(json!({"name": "X"}).to_string()))
         .unwrap();
@@ -65,7 +68,8 @@ async fn horse_age_zero_rejected() {
     let owner_id = v["id"].as_str().unwrap().to_string();
 
     let req = Request::builder()
-        .method("POST").uri("/horses")
+        .method("POST")
+        .uri("/horses")
         .header("Content-Type", "application/json")
         .body(Body::from(
             json!({

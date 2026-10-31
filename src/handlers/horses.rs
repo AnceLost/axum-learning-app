@@ -1,23 +1,19 @@
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
     http::StatusCode,
 };
-use sea_orm::{
-    ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set,
-};
+use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use uuid::Uuid;
 
 use crate::{
-    dto::{CreateHorse, ParticipantDto},
+    dto::CreateHorse,
     error::{AppError, AppResult},
-    models::{competitions, horses, jockeys, race_results, races},
+    models::{competitions, horses, race_results, races},
     state::AppState,
 };
 
-pub async fn list_horses(
-    State(state): State<AppState>,
-) -> AppResult<Json<Vec<horses::Model>>> {
+pub async fn list_horses(State(state): State<AppState>) -> AppResult<Json<Vec<horses::Model>>> {
     let horses = horses::Entity::find().all(&state.db).await?;
     Ok(Json(horses))
 }
@@ -35,7 +31,6 @@ pub async fn create_horse(
         gender: Set(payload.gender),
         age: Set(payload.age),
         owner_id: Set(payload.owner_id),
-        ..Default::default()
     };
     let horse = horse.insert(&state.db).await?;
     Ok((StatusCode::CREATED, Json(horse)))

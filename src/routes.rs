@@ -1,6 +1,6 @@
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 use metrics_exporter_prometheus::PrometheusHandle;
 
@@ -12,13 +12,25 @@ use crate::{
 pub fn create_router(state: AppState) -> Router {
     Router::new()
         // Владельцы
-        .route("/owners", get(owners::list_owners).post(owners::create_owner))
+        .route(
+            "/owners",
+            get(owners::list_owners).post(owners::create_owner),
+        )
         // Лошади
-        .route("/horses", get(horses::list_horses).post(horses::create_horse))
+        .route(
+            "/horses",
+            get(horses::list_horses).post(horses::create_horse),
+        )
         .route("/horses/{id}/competitions", get(horses::horse_competitions))
         // Жокеи
-        .route("/jockeys", get(jockeys::list_jockeys).post(jockeys::create_jockey))
-        .route("/jockeys/{id}/competitions", get(jockeys::jockey_competitions))
+        .route(
+            "/jockeys",
+            get(jockeys::list_jockeys).post(jockeys::create_jockey),
+        )
+        .route(
+            "/jockeys/{id}/competitions",
+            get(jockeys::jockey_competitions),
+        )
         // Состязания
         .route(
             "/competitions",
@@ -38,9 +50,11 @@ pub fn create_router(state: AppState) -> Router {
 }
 
 pub fn create_metrics_router(metric_handle: PrometheusHandle) -> Router {
-    Router::new()
-        .route("/metrics", get(move || {
+    Router::new().route(
+        "/metrics",
+        get(move || {
             let handle = metric_handle.clone();
-            async move {handle.render()}
-        }))
+            async move { handle.render() }
+        }),
+    )
 }

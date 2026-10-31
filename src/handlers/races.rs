@@ -1,6 +1,6 @@
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
     http::StatusCode,
 };
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
@@ -23,7 +23,6 @@ pub async fn create_race(
         competition_id: Set(competition_id),
         name: Set(payload.name),
         status: Set(RaceStatus::Scheduled),
-        ..Default::default()
     };
     let race = race.insert(&state.db).await?;
     Ok((StatusCode::CREATED, Json(race)))

@@ -1,7 +1,7 @@
 use axum::{
-    extract::{Path, State},
     Json,
-    http::StatusCode
+    extract::{Path, State},
+    http::StatusCode,
 };
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use uuid::Uuid;
@@ -30,7 +30,6 @@ pub async fn create_competition(
         date: Set(payload.date),
         time: Set(payload.time),
         venue: Set(payload.venue),
-        ..Default::default()
     };
     let comp = comp.insert(&state.db).await?;
     Ok((StatusCode::CREATED, Json(comp)))
@@ -63,10 +62,8 @@ pub async fn competition_participants(
         .await?;
 
     // 3. Мапим в DTO. Имя заезда подтягиваем из подготовленного мапа.
-    let race_names: std::collections::HashMap<Uuid, Option<String>> = race_rows
-        .into_iter()
-        .map(|r| (r.id, r.name))
-        .collect();
+    let race_names: std::collections::HashMap<Uuid, Option<String>> =
+        race_rows.into_iter().map(|r| (r.id, r.name)).collect();
 
     let dtos = results
         .into_iter()

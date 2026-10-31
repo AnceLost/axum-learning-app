@@ -1,9 +1,9 @@
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
-use sea_orm::{ActiveModelTrait, EntityTrait, Set, TransactionTrait, ConnectionTrait};
+use sea_orm::{ActiveModelTrait, ConnectionTrait, EntityTrait, Set, TransactionTrait};
 use uuid::Uuid;
 
 use crate::{

@@ -1,12 +1,13 @@
 mod common;
 
+use axum::Router;
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
-use axum::Router;
 use http_body_util::BodyExt;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use tower::ServiceExt;
 
+#[allow(unused_imports)]
 use axum_postgres_app::models::horses;
 
 async fn create_owner(app: &Router) -> String {
@@ -14,9 +15,7 @@ async fn create_owner(app: &Router) -> String {
         .method("POST")
         .uri("/owners")
         .header("Content-Type", "application/json")
-        .body(Body::from(
-            json!({"name": "Test Owner"}).to_string(),
-        ))
+        .body(Body::from(json!({"name": "Test Owner"}).to_string()))
         .unwrap();
 
     let resp = app.clone().oneshot(req).await.unwrap();

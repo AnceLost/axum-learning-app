@@ -1,6 +1,6 @@
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
     http::StatusCode,
 };
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
@@ -13,9 +13,7 @@ use crate::{
     state::AppState,
 };
 
-pub async fn list_jockeys(
-    State(state): State<AppState>,
-) -> AppResult<Json<Vec<jockeys::Model>>> {
+pub async fn list_jockeys(State(state): State<AppState>) -> AppResult<Json<Vec<jockeys::Model>>> {
     let jockeys = jockeys::Entity::find().all(&state.db).await?;
     Ok(Json(jockeys))
 }
@@ -30,7 +28,6 @@ pub async fn create_jockey(
         address: Set(payload.address),
         age: Set(payload.age),
         rating: Set(payload.rating.unwrap_or(0)),
-        ..Default::default()
     };
     let jockey = jockey.insert(&state.db).await?;
     Ok((StatusCode::CREATED, Json(jockey)))
