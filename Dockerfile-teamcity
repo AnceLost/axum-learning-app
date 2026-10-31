@@ -6,7 +6,7 @@ RUN useradd -m -s /bin/bash app
 
 WORKDIR /app
 # Копируем ТОЛЬКО готовый бинарник из контекста
-COPY target/release/axum-learning-app /app/server
+COPY target/release/axum_postgres_app /app/server
 
 RUN chown app:app /app/server
 USER app
