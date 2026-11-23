@@ -1,0 +1,14 @@
+# Конфигурация cargo-audit.
+#
+# RUSTSEC-2026-0543 (chrono is unmaintained) — не уязвимость, а предупреждение
+# о том, что крейт больше не поддерживается. Исправленной версии не существует
+# (0.4.45 — последняя), поэтому обновлением Cargo.lock это не лечится.
+# chrono приходит из sea-orm (feature "with-chrono") и используется в моделях.
+#
+# TODO: когда появится время — переехать на крейт `time`:
+#   sea-orm: features ["with-time"] вместо ["with-chrono"]
+#   time = { version = "0.3", features = ["serde", "serde-human-readable"] }
+#   chrono::NaiveDate -> time::Date, chrono::NaiveTime -> time::Time
+# После этого удалить этот ignore.
+[advisories]
+ignore = ["RUSTSEC-2026-0543"]
