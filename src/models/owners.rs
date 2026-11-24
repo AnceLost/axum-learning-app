@@ -10,6 +10,7 @@ pub struct Model {
     pub name: String,
     pub address: Option<String>,
     pub phone: Option<String>,
+    pub gender: Option<String>,
 
     #[sea_orm(has_many)]
     pub horses: HasMany<super::horses::Entity>,

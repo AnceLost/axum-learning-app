@@ -18,6 +18,7 @@ pub async fn create_owner(
         name: Set(payload.name),
         address: Set(payload.address),
         phone: Set(payload.phone),
+        gender: Set(payload.gender),
     };
     let owner = owner.insert(&state.db).await?;
     Ok((StatusCode::CREATED, Json(owner)))
