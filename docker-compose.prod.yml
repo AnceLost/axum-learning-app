@@ -10,3 +10,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3000"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+      start_period: 5s
