@@ -8,6 +8,8 @@ pub struct CreateOwner {
     pub name: String,
     pub address: Option<String>,
     pub phone: Option<String>,
+    /// "MALE" / "FEMALE". Необязательное: старые клиенты могут его не присылать.
+    pub gender: Option<String>,
 }
 
 #[derive(Deserialize)]
